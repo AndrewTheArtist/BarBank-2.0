@@ -20,20 +20,17 @@ paths:
         - users
       responses:
         '201':
-          description: Successful response
+          description: Created
         '400':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
               examples:
-                user validation failed:
+                Parameter(s) missing:
                   value:
-                    error: >-
-                      user validation failed: (?<parameterName>[^:]+): Path
-                      `(?<parameterNameAgain>[^`]+)` is required.(, ([^:]+): Path
-                      `([^`]+)` is required.){0,2}
-          description: Parameter missing
+                    error: some text
+          description: user validation failed
         '409':
           content:
             application/json:
@@ -63,7 +60,7 @@ paths:
   /sessions:
     post:
       requestBody:
-        description: A new 'session' to be created
+        description: ''
         content:
           application/json:
             schema:
@@ -71,14 +68,14 @@ paths:
             examples:
               POST / session request:
                 value:
-                  username: bruh
-                  password: sunrise12345
+                  username: bar
+                  password: qwerty
         required: true
       tags:
         - session
       responses:
         '201':
-          description: Successful response
+          description: Working response
         '400':
           content:
             application/json:
@@ -99,13 +96,40 @@ paths:
                   value:
                     error: Invalid credentials
           description: Invalid credentials
-      summary: Path used to manage the list of sessions
+      summary: Create a session
     delete:
       tags:
         - session
       responses:
         '204':
-          description: Session Deleted successfully
+          description: Session successfully deleted
+      security:
+        -
+          bearer: []
+      summary: Delete session
+  /users/current:
+    get:
+      tags:
+        - users
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/user'
+              examples:
+                GET /users/current response:
+                  value:
+                    accounts:
+                      -
+                        account_number: gbh0la6uvf47
+                        balance: 10000
+                        currency: euro
+                        name: Main
+                        userId: 61656517664531e5daff22ec
+                    name: mees
+                    username: mees2
+          description: Successful request
         '400':
           content:
             application/json:
@@ -115,24 +139,24 @@ paths:
                 Invalid authorization format:
                   value:
                     error: Invalid authorization format
-          description: Bad Requset
+          description: Invalid authorization format
         '401':
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/error'
               examples:
+                Invalid Token:
+                  value:
+                    error: Invalid token
                 Missing authorization:
                   value:
                     error: Missing authorization
-                Invalid Token:
-                  value:
-                    error: Invalid Token
-          description: Problem with authorization
+          description: Invalid Token
       security:
         -
           bearer: []
-      summary: Delete session
+      description: Returns active  `user` data
 components:
   schemas:
     user:
@@ -159,7 +183,7 @@ components:
           type: string
       example:
         error: some text
-    session:
+    Session:
       title: Root Type for Session
       description: ''
       type: object
