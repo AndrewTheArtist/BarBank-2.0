@@ -26,12 +26,14 @@ module.exports = router.post('/', async (req, res) => {
         });
 
         // Add account
-        await Account.create({userId: user._id,
+        await Account.create({
+            userId: user._id,
             account_number: process.env.BANK_PREFIX + Math.random().toString(36).substr(2, 9),
             currency: 'euro',
             balance: '10000',
             name: 'Main'
         });
+
 
 
         // 201 Created

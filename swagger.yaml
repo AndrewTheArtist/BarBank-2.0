@@ -157,6 +157,84 @@ paths:
         -
           bearer: []
       description: Returns active  `user` data
+  /transactions:
+    summary: Path used to manage the list of transactions.
+    description: >-
+      The REST endpoint/path used to list and create zero or more `transaction` entities.  This path
+      contains a `GET` and `POST` operation to perform the list and create tasks, respectively.
+    post:
+      requestBody:
+        description: A new `transaction` to be created.
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/transaction'
+        required: true
+      tags:
+        - transactions
+      responses:
+        '200':
+          description: |
+            Created
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Invalid amount:
+                  value:
+                    error: Invalid amount
+          description: Invalid amount
+        '401':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Missing authorization:
+                  value:
+                    error: Missing authorization
+                Invalid token:
+                  value:
+                    error: Invalid token
+          description: Missing authorization
+        '403':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Account does not belong to a user:
+                  value:
+                    error: Account does not belong to a user
+          description: Account does not belong to a user
+        '404':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Destination bank not found:
+                  value:
+                    error: Destination bank not found
+          description: Destination bank not found
+        '422':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/error'
+              examples:
+                Not enough money on account:
+                  value:
+                    error: Not enough money on account
+          description: Not enough money on account
+      security:
+        -
+          bearer: []
+      operationId: createtransaction
+      summary: Create a transaction
+      description: Creates a new instance of a `transaction`.
 components:
   schemas:
     user:
@@ -192,6 +270,28 @@ components:
           type: string
       example:
         token: 616037440515e7a599aad56c
+    transaction:
+      title: Root Type for transaction
+      description: ''
+      type: object
+      properties:
+        accountFrom:
+          type: string
+        accountTo:
+          type: string
+        amount:
+          format: int32
+          type: integer
+        currency:
+          type: string
+        explanation:
+          type: string
+      example:
+        accountFrom: EEnme5rdmzd
+        accountTo: '809'
+        amount: 23
+        currency: Doller
+        explanation: Hello
   securitySchemes:
     bearer:
       scheme: bearer
@@ -202,4 +302,7 @@ tags:
     description: ''
   -
     name: session
+    description: ''
+  -
+    name: transactions
     description: ''

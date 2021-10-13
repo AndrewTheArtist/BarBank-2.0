@@ -1,6 +1,9 @@
 const Session = require('./models/Session');
+const Bank = require('./models/Bank');
+const axios = require('axios');
+const Transaction = require('./models/Transaction');
 
-exports.verifyToken=  async function (req, res, next) {
+exports.verifyToken = async function (req, res, next) {
 
     // Check Authorization header existence
     if (!req.header('authorization')) {
@@ -36,4 +39,40 @@ exports.verifyToken=  async function (req, res, next) {
     // Pass the execution to the next middleware function
     return next();
 }
+
+exports.refreshBanksFromCentralBank = async () => {
+
+    // GET list of banks from central bank
+    try {
+        let bankList = await axios.get('https://keskpank.diarainfra.com/banks', {
+            headers:{
+                'Api-Key':process.env.API_KEY
+            }
+        })
+
+        // Delete current banks list
+        await Bank.deleteMany()
+
+        // Insert new data into banks
+        for (let bank of bankList.data) {
+            await new Bank({
+                name: bank.name,
+                transactionUrl: bank.transactionUrl,
+                bankPrefix: bank.bankPrefix,
+                owners: bank.owners,
+                jwksUrl: bank.jwksUrl
+            }).save();
+        }
+
+        // Return true
+        return true
+
+    } catch (e) {
+         // Return exception message when encounter error
+        return {error: e.message}
+    }
+
+
+}
+
 
